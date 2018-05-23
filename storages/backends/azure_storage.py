@@ -71,7 +71,10 @@ class AzureStorage(Storage):
             return None
 
     def _open(self, name, mode="rb"):
-        contents = self.connection.get_blob(self.azure_container, name)
+        if setting("AZURE_2018_SDK"):
+            contents = self.connection.get_blob_to_bytes(self.azure_container, name).content
+        else:
+            contents = self.connection.get_blob(self.azure_container, name)
         return ContentFile(contents)
 
     def exists(self, name):
